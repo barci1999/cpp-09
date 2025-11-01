@@ -6,13 +6,36 @@
 /*   By: pablalva <pablalva@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:05:58 by pablalva          #+#    #+#             */
-/*   Updated: 2025/11/01 18:02:14 by pablalva         ###   ########.fr       */
+/*   Updated: 2025/11/01 21:27:45 by pablalva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "BitcoinExchange.hpp"
 BitcoinExchange::BitcoinExchange()
 {
+	loadDatabase("data.csv");
+}
+BitcoinExchange::BitcoinExchange(char *file)
+{
+	loadDatabase (file);
+}
+BitcoinExchange::BitcoinExchange(const BitcoinExchange& other)
+{
+	this->_dataBase = other._dataBase;
+}
+BitcoinExchange& BitcoinExchange::operator=(const BitcoinExchange& other)
+{
+	if (this == &other)
+	{
+		return(*this);
+	}
+	this->_dataBase = other._dataBase;
+	return(*this);
+	
+}
+BitcoinExchange::~BitcoinExchange()
+{
+	
 }
 std::string BitcoinExchange::trim(std::string input)
 {
@@ -28,17 +51,7 @@ std::string BitcoinExchange::trim(std::string input)
     	end--;
 	return(input.substr(start,end - start));  
 }
-BitcoinExchange::BitcoinExchange(char *file)
-{
-	loadDatabase (file);	
-	for (std::map<std::string, double>::iterator it = this->_dataBase.begin(); it != _dataBase.end(); ++it)
-	{
-		std::cout << it->first << " => " << it->second << std::endl;
-	}
-	
-}
-BitcoinExchange::~BitcoinExchange(){}
-void BitcoinExchange::loadDatabase(char *file)
+void BitcoinExchange::loadDatabase(const char *file)
 {
 	std::string file_name = trim((std::string)file);
 	if (file_name.empty())
@@ -59,7 +72,119 @@ void BitcoinExchange::loadDatabase(char *file)
 		}
 		std::string date = trim(temp.substr(0,pos));
 		double value = std::strtod(trim(temp.substr(pos+1)).c_str(),NULL);
-		std::cout << value << std::endl;
 		this->_dataBase[date] = value;
+	}
+}
+bool BitcoinExchange::is_validDate(std::string to_check)
+{	
+	if (to_check.length() != 10)
+		return(false);
+	else if (to_check[4] != '-' && to_check[7] != '-')
+		return(false);
+	std::string stryear = to_check.substr(0,4);
+	std::string strmonth = to_check.substr(5,2);
+	std::string strday = to_check.substr(8,2);
+	for (size_t i = 0; i < stryear.size(); i++)
+        if (!std::isdigit(stryear[i])) return false;
+    for (size_t i = 0; i < strmonth.size(); i++)
+        if (!std::isdigit(strmonth[i])) return false;
+    for (size_t i = 0; i < strday.size(); i++)
+        if (!std::isdigit(strday[i])) return false;
+	int year = std::atoi(stryear.c_str());
+	int month = std::atoi(strmonth.c_str());
+	int day = std::atoi(strday.c_str());
+	if(year < 0)
+		return(false);
+	if (month < 1 || month > 12)
+		return (false);
+	int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    bool leap_year = (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0));
+    if (leap_year)
+        daysInMonth[1] = 29;
+    if (day < 1 || day > daysInMonth[month - 1])
+        return false;
+	return(true);
+}
+bool BitcoinExchange::is_validValue(std::string to_check)
+{
+	if (to_check.empty())
+	{
+		std::cout << "Error: empty value." << std::endl;
+		return false;
+	}
+    bool hasDecimal = false;
+    for (size_t i = 0; i < to_check.size(); ++i)
+    {
+        char c = to_check[i];
+        if (c == '.')
+        {
+            if (hasDecimal)
+			{
+				std::cout << "Error: invalid number -> " << to_check << std::endl;
+                return false;
+			}
+            hasDecimal = true;
+        }
+        else if (!std::isdigit(c) && c != '-' && c != '+')
+		{
+			std::cout << "Error: invalid number -> "<< to_check << std::endl;
+            return false;
+		}
+    }
+	float value = std::atof(to_check.c_str());
+	if (value < 0)
+	{
+		std::cout << "Error: not a positive number -> " << to_check << std::endl;
+		return(false);
+	}
+	else if (value > 1000)
+	{
+		std::cout << "Error: too large a number ->" << to_check << std::endl;
+		return(false);
+	}
+	return(true);
+	
+	
+}
+bool BitcoinExchange::check_format(std::string input)
+{
+	std::istringstream ss(input);
+	std::string strDate,strValue;
+	if (!std::getline(ss,strDate,'|') || !std::getline(ss,strValue))
+	{
+		std::cout << "Error: invalid format -> " << input << std::endl;
+		return(false);
+	}
+	strDate = trim(strDate.c_str());
+	strValue = trim(strValue.c_str());
+	if (!is_validDate(strDate))
+	{
+		std::cout << "Error: invalid date -> " << strDate << std::endl;
+		return(false);
+	}
+	if(!is_validValue(strValue))
+	{
+		return(false);
+	}
+	return(true);
+}
+void BitcoinExchange::multiply(std::ifstream& file)
+{
+	std::string input;
+	bool first_line = true;
+	while (std::getline(file,input))
+	{
+		if (first_line)
+		{
+			first_line = false;
+			if(trim(input) != "data | value")
+			{
+				throw ExceptionError("Error: bad header in file.");
+			}
+		}
+		else if(check_format(input))
+		{
+			/*parseo terminado falta la parte de las multiplicaciones */
+		}
 	}
 }

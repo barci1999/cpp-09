@@ -6,7 +6,7 @@
 /*   By: pablalva <pablalva@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:05:55 by pablalva          #+#    #+#             */
-/*   Updated: 2025/11/01 17:51:02 by pablalva         ###   ########.fr       */
+/*   Updated: 2025/11/01 21:02:44 by pablalva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include<string>
 # include<map>
 # include<fstream>
+# include<sstream>
 # include<cstdlib>
 class BitcoinExchange
 {
@@ -37,8 +38,12 @@ public:
                                         return(_msg);
                                 }
                 };
-	void loadDatabase(char *file);
-	std::string trim(std::string input);
+	void loadDatabase(const char *file);
+	void multiply(std::ifstream &file_fd);
+	bool check_format(std::string input);
+	bool is_validDate(std::string to_check);
+	bool is_validValue(std::string to_check);
+	static std::string trim(std::string input);
 };
 
 #endif
