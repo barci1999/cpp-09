@@ -6,7 +6,7 @@
 /*   By: pablalva <pablalva@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:05:58 by pablalva          #+#    #+#             */
-/*   Updated: 2025/11/01 21:27:45 by pablalva         ###   ########.fr       */
+/*   Updated: 2025/11/03 15:19:46 by pablalva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,11 +85,21 @@ bool BitcoinExchange::is_validDate(std::string to_check)
 	std::string strmonth = to_check.substr(5,2);
 	std::string strday = to_check.substr(8,2);
 	for (size_t i = 0; i < stryear.size(); i++)
-        if (!std::isdigit(stryear[i])) return false;
+	{
+        if (!std::isdigit(stryear[i])) 
+			return false;
+	}
     for (size_t i = 0; i < strmonth.size(); i++)
-        if (!std::isdigit(strmonth[i])) return false;
+	{
+        if (!std::isdigit(strmonth[i])) 
+			return false;
+	}
     for (size_t i = 0; i < strday.size(); i++)
-        if (!std::isdigit(strday[i])) return false;
+	{
+        if (!std::isdigit(strday[i])) 
+			return false;
+	}
+		
 	int year = std::atoi(stryear.c_str());
 	int month = std::atoi(strmonth.c_str());
 	int day = std::atoi(strday.c_str());
@@ -102,7 +112,9 @@ bool BitcoinExchange::is_validDate(std::string to_check)
     if (leap_year)
         daysInMonth[1] = 29;
     if (day < 1 || day > daysInMonth[month - 1])
+	{
         return false;
+	}
 	return(true);
 }
 bool BitcoinExchange::is_validValue(std::string to_check)
@@ -139,7 +151,7 @@ bool BitcoinExchange::is_validValue(std::string to_check)
 	}
 	else if (value > 1000)
 	{
-		std::cout << "Error: too large a number ->" << to_check << std::endl;
+		std::cout << "Error: too large a number -> " << to_check << std::endl;
 		return(false);
 	}
 	return(true);
@@ -168,6 +180,28 @@ bool BitcoinExchange::check_format(std::string input)
 	}
 	return(true);
 }
+void BitcoinExchange::print_values(std::string input)
+{
+    std::istringstream ss(input);
+    std::string strDate, strValue;
+    std::getline(ss, strDate, '|');
+    std::getline(ss, strValue);
+    strDate = trim(strDate.c_str());
+    strValue = trim(strValue.c_str());
+
+    std::map<std::string, double>::iterator it = this->_dataBase.find(strDate);
+
+    if (it != this->_dataBase.end())
+    {
+        double value = std::strtod(strValue.c_str(), NULL);
+        std::cout << strDate << " => " << strValue
+                  << " = " << (value * it->second) << std::endl;
+    }
+    else
+    {
+        std::cout << "Error: date not found -> " << strDate << std::endl;
+    }
+}
 void BitcoinExchange::multiply(std::ifstream& file)
 {
 	std::string input;
@@ -177,14 +211,15 @@ void BitcoinExchange::multiply(std::ifstream& file)
 		if (first_line)
 		{
 			first_line = false;
-			if(trim(input) != "data | value")
+			if(trim(input) != "date | value")
 			{
+				std::cout << trim(input) << std::endl;
 				throw ExceptionError("Error: bad header in file.");
 			}
 		}
 		else if(check_format(input))
 		{
-			/*parseo terminado falta la parte de las multiplicaciones */
+			print_values(input);
 		}
 	}
 }

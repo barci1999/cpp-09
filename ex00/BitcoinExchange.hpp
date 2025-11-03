@@ -6,7 +6,7 @@
 /*   By: pablalva <pablalva@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:05:55 by pablalva          #+#    #+#             */
-/*   Updated: 2025/11/01 21:02:44 by pablalva         ###   ########.fr       */
+/*   Updated: 2025/11/03 14:12:05 by pablalva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ public:
 	bool is_validDate(std::string to_check);
 	bool is_validValue(std::string to_check);
 	static std::string trim(std::string input);
+	void print_values(std::string input);
 };
 
 #endif
