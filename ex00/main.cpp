@@ -6,16 +6,12 @@
 /*   By: pablalva <pablalva@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:06:00 by pablalva          #+#    #+#             */
-/*   Updated: 2025/11/03 15:51:59 by pablalva         ###   ########.fr       */
+/*   Updated: 2025/11/03 15:54:54 by pablalva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "BitcoinExchange.hpp"
 
-// bool check_valid_string(std::string input)
-// {
-// 	std::string comprove = BitcoinExchange::trim(input);
-// }
 int main(int argc,char **argv)
 {
 	if(argc != 2)
