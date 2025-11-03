@@ -6,7 +6,7 @@
 /*   By: pablalva <pablalva@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:05:58 by pablalva          #+#    #+#             */
-/*   Updated: 2025/11/03 15:19:46 by pablalva         ###   ########.fr       */
+/*   Updated: 2025/11/03 16:57:49 by pablalva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void BitcoinExchange::loadDatabase(const char *file)
 			throw ExceptionError("Error: invalid format in the database file.");
 		}
 		std::string date = trim(temp.substr(0,pos));
-		double value = std::strtod(trim(temp.substr(pos+1)).c_str(),NULL);
+		float value = std::strtof(trim(temp.substr(pos+1)).c_str(),NULL);
 		this->_dataBase[date] = value;
 	}
 }
@@ -188,19 +188,19 @@ void BitcoinExchange::print_values(std::string input)
     std::getline(ss, strValue);
     strDate = trim(strDate.c_str());
     strValue = trim(strValue.c_str());
-
-    std::map<std::string, double>::iterator it = this->_dataBase.find(strDate);
-
-    if (it != this->_dataBase.end())
+    float value = std::strtof(strValue.c_str(), NULL);
+    std::map<std::string, float>::iterator it = this->_dataBase.lower_bound(strDate);
+    if (it == this->_dataBase.end() || it->first != strDate)
     {
-        double value = std::strtod(strValue.c_str(), NULL);
-        std::cout << strDate << " => " << strValue
-                  << " = " << (value * it->second) << std::endl;
+        if (it == this->_dataBase.begin())
+        {
+            std::cout << "Error: no posible date to -> " << strDate << std::endl;
+			return;
+		}
+        --it;
     }
-    else
-    {
-        std::cout << "Error: date not found -> " << strDate << std::endl;
-    }
+    std::cout << strDate << " => " << strValue
+              << " = " << (value * it->second) << std::endl;
 }
 void BitcoinExchange::multiply(std::ifstream& file)
 {

@@ -6,7 +6,7 @@
 /*   By: pablalva <pablalva@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:05:55 by pablalva          #+#    #+#             */
-/*   Updated: 2025/11/03 14:12:05 by pablalva         ###   ########.fr       */
+/*   Updated: 2025/11/03 16:48:40 by pablalva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 class BitcoinExchange
 {
 private:
-	std::map<std::string,double> _dataBase;
+	std::map<std::string,float> _dataBase;
 public:
 	BitcoinExchange(/* args */);
 	BitcoinExchange(char* file);
