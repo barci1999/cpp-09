@@ -6,7 +6,7 @@
 /*   By: pablalva <pablalva@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/03 15:58:26 by pablalva          #+#    #+#             */
-/*   Updated: 2025/11/05 12:21:03 by pablalva         ###   ########.fr       */
+/*   Updated: 2025/11/05 14:13:37 by pablalva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 # include<algorithm>
 # include<stack>
 # include<iostream>
-# include<string.h>
+# include<string>
 # include<sstream>
 # include<vector>
 class RPN
