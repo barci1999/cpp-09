@@ -6,7 +6,7 @@
 /*   By: pablalva <pablalva@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 11:27:16 by pablalva          #+#    #+#             */
-/*   Updated: 2025/11/05 12:29:52 by pablalva         ###   ########.fr       */
+/*   Updated: 2025/11/09 18:23:58 by pablalva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,6 +132,7 @@ int RPN::execute()
 	{
 		if (is_nbr(*t))
 		{
+			result = std::atoi((*t).c_str());
 			this->_stack.push(std::atoi((*t).c_str()));
 		}
 		else if (is_operator(*t))

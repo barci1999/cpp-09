@@ -6,23 +6,22 @@
 /*   By: pablalva <pablalva@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 14:12:19 by pablalva          #+#    #+#             */
-/*   Updated: 2025/11/09 16:03:43 by pablalva         ###   ########.fr       */
+/*   Updated: 2025/11/09 18:14:21 by pablalva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include"PmergeMe.hpp"
+
+/*****************************CANONICAL FORM***********************************/
 PmergeMe::PmergeMe()
 {}
 PmergeMe::PmergeMe(char**argv)
 {
 	load_input(argv);
-	insert_deque();
-	insert_list();
 }
 PmergeMe::PmergeMe(const PmergeMe& other)
 {
 	this->_deque = other._deque;
-	this->_input = other._input;
 	this->_list = other._list;
 }
 PmergeMe& PmergeMe::operator=(const PmergeMe& other)
@@ -32,18 +31,36 @@ PmergeMe& PmergeMe::operator=(const PmergeMe& other)
 		return *this;
 	}
 	this->_deque = other._deque;
-	this->_input = other._input;
 	this->_list = other._list;
 	return(*this);
 }
-PmergeMe::~PmergeMe(){
-	
+PmergeMe::~PmergeMe(){	
 }
+
+std::ostream& operator<<(std::ostream& to_out,const PmergeMe& to_print)
+{
+	to_out << std::endl << "Deque: ";
+	for (std::deque<int>::const_iterator it = to_print.getDeque().begin(); it != to_print.getDeque().end(); ++it)
+		to_out << *it << " ";
+
+	to_out << std::endl <<"List: ";
+	for (std::list<int>::const_iterator it = to_print.getList().begin(); it != to_print.getList().end(); ++it)
+		to_out << *it << " ";
+
+	return to_out;
+}
+
+/*********************************PARSING*********************************/
+
 bool PmergeMe::isValidNumber(const std::string &s) 
 {
-    if (s.empty()) return false;
+    if (s.empty()) 
+		return false;
     for (size_t i = 0; i < s.size(); ++i)
-        if (!isdigit(s[i])) return false;
+	{
+        if (!isdigit(s[i]))
+				return false;
+	}
     long n = std::atol(s.c_str());
     return n >= 0 && n <= INT_MAX;
 }
@@ -58,20 +75,50 @@ void PmergeMe::load_input(char **argv)
 		{
 			if (!isValidNumber(token))
 				throw ExceptionError("Error: invalid input");
-			if (!_input.insert(token).second)
-				throw ExceptionError("Error: duplicate input");
+			else
+				{
+					if(std::find(this->_deque.begin(),this->_deque.end(),std::atoi(token.c_str())) != this->_deque.end())
+						throw ExceptionError("Error: duplicated element.");
+					else
+						this->_deque.push_back(std::atoi(token.c_str()));
+					if (std::find(this->_list.begin(),this->_list.end(),std::atoi(token.c_str())) != this->_list.end())
+						throw ExceptionError("Error: duplicated element.");
+					else
+						this->_list.push_back(std::atoi(token.c_str()));
+				}
 		}
 	}
 }
-void PmergeMe::insert_deque()
+bool isSortedDeque(const std::deque<int>& dq)
 {
-	for (std::set<std::string>::iterator t = this->_input.begin(); t != this->_input.end(); t++)
+	if (dq.empty()) 
+	return true;
+	for (std::deque<int>::const_iterator it = dq.begin(); it != dq.end() - 1; ++it) 
 	{
-		int value = std::atoi(t->c_str());
-		this->_deque.push_back(value);
+		if (*it > *(it + 1))
+		return false; 
 	}
-	
+	return true;
 }
+bool isSortedList(const std::list<int>& lst)
+{
+	if (lst.empty()) 
+	return true;
+	std::list<int>::const_iterator it = lst.begin();
+	std::list<int>::const_iterator next = it;
+	++next;
+	while (next != lst.end()) 
+	{
+		if (*it > *next)
+		return false;
+		++it;
+		++next;
+	}
+	return true;
+}
+
+/******************************SORT METHODS**************************************/
+
 void PmergeMe::fordJohnsonDeque(std::deque<int>& deque)
 {
 	if (deque.size() <= 1)
@@ -139,6 +186,11 @@ void PmergeMe::fordJohnsonList(std::list<int>& list)
 }
 void PmergeMe::sortDeque()
 {
+	if (this->_deque.empty())
+	{
+		throw ExceptionError("Error: the deque container is empty");
+	}
+	
     std::cout << "---------Container deque-----------" << std::endl;
 
     std::cout << "Before: ";
@@ -146,23 +198,20 @@ void PmergeMe::sortDeque()
         std::cout << *i << " ";
     std::cout << std::endl;
 
-    clock_t start = clock();
     fordJohnsonDeque(this->_deque);
-    clock_t end = clock();
-
-    double time = double(end - start) * 1000000 / CLOCKS_PER_SEC;
 
     std::cout << "After: ";
     for (std::deque<int>::iterator i = this->_deque.begin(); i != this->_deque.end(); ++i)
         std::cout << *i << " ";
     std::cout << std::endl;
-
-    std::cout << "Time to process a range of " << this->_deque.size()
-              << " elements with std::deque : "
-              << std::fixed << std::setprecision(5) << time << " us" << std::endl;
 }
 void PmergeMe::sortList()
 {
+	if (this->_list.empty())
+	{
+		throw("Error: the list container is empty");
+	}
+	
     std::cout << "---------Container list-----------" << std::endl;
 
     std::cout << "Before: ";
@@ -170,41 +219,9 @@ void PmergeMe::sortList()
         std::cout << *it << " ";
     std::cout << std::endl;
 
-    clock_t start = clock();
     fordJohnsonList(this->_list); 
-    clock_t end = clock();
-
-    double time_us = double(end - start) * 1000000 / CLOCKS_PER_SEC;
-
     std::cout << "After: ";
     for (std::list<int>::iterator it = this->_list.begin(); it != this->_list.end(); ++it)
         std::cout << *it << " ";
     std::cout << std::endl;
-
-    std::cout << "Time to process a range of " << this->_list.size()
-              << " elements with std::list : "
-              << std::fixed << std::setprecision(5) << time_us << " us" << std::endl;
-}
-void PmergeMe::insert_list()
-{
-	for (std::set<std::string>::iterator t = this->_input.begin(); t != this->_input.end(); t++)
-	{
-		int value = std::atoi(t->c_str());
-		this->_list.push_back(value);
-	}
-}
-std::ostream& operator<<(std::ostream& to_out,const PmergeMe& to_print)
-{
-	to_out << "Input strings: ";
-		for (std::set<std::string>::const_iterator it = to_print.getInput().begin(); it != to_print.getInput().end(); ++it)
-		to_out << *it << " ";
-	to_out << std::endl << "Deque: ";
-	for (std::deque<int>::const_iterator it = to_print.getDeque().begin(); it != to_print.getDeque().end(); ++it)
-		to_out << *it << " ";
-
-	to_out << std::endl <<"List: ";
-	for (std::list<int>::const_iterator it = to_print.getList().begin(); it != to_print.getList().end(); ++it)
-		to_out << *it << " ";
-
-	return to_out;
 }
