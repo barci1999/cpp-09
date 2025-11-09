@@ -6,7 +6,7 @@
 /*   By: pablalva <pablalva@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 14:12:22 by pablalva          #+#    #+#             */
-/*   Updated: 2025/11/05 17:17:30 by pablalva         ###   ########.fr       */
+/*   Updated: 2025/11/09 15:59:00 by pablalva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,9 @@
 # include<list>
 # include<set>
 # include<limits.h>
-
+# include <ctime>
+# include <iomanip> 
+#include <sys/time.h> 
 class PmergeMe
 {
 private:
@@ -43,10 +45,24 @@ public:
                                         return(_msg);
                                 }
                 };
+
+
 	bool isValidNumber(const std::string &s);
 	void insert_list();
 	void insert_deque();
 	void load_input(char **argv);
+	
+	
+	void sortDeque();
+	void fordJohnsonDeque(std::deque<int>& deque);
+	
+	void sortList();
+	void fordJohnsonList(std::list<int>& lst);
+	
+	const std::set<std::string>& getInput() const { return _input; }
+	const std::deque<int>& getDeque() const { return _deque; }
+	const std::list<int>& getList() const { return _list; }
 };
+std::ostream& operator<<(std::ostream& to_out, const PmergeMe& to_print);
 
 # endif
