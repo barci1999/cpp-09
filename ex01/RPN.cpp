@@ -6,7 +6,7 @@
 /*   By: pablalva <pablalva@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 11:27:16 by pablalva          #+#    #+#             */
-/*   Updated: 2025/11/09 18:23:58 by pablalva         ###   ########.fr       */
+/*   Updated: 2025/11/10 12:16:39 by pablalva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,6 +144,10 @@ int RPN::execute()
 			else
 				result = operation(t);
 		}
+	}
+	if (this->_stack.size() != 1)
+	{
+		throw ExceptionError("Error: not enoght operators");
 	}
 	return(result);
 }
